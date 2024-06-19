@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yatzi</title>
+    <link rel="stylesheet" href="styles.css">
+
+</head>
+<body>
+    <header>
+        YaTzI
+    </header>  
+
+    <div class="TwoColumns">
+        <div class="gameColumn">
+          
+            <!-- Your game display content goes here -->
+            <div class="savedDice">
+                <h4>Dices To Be Kept</h4>
+                <div class="savedDiceDisplay">
+                    <!-- Border with logic -->
+                    <div class="dice" id="die1">
+                        <img src="docs/design_system/images/dice1.png" class="face">
+                    </div>
+                    <div class="dice" id="die2">
+                        <img src="docs/design_system/images/dice2.png" class="face">
+                    </div>
+                    <div class="dice" id="die3">
+                        <img src="docs/design_system/images/dice3.png" class="face">
+                    </div>
+                    <div class="dice" id="die4">
+                        <img src="docs/design_system/images/dice4.png" class="face">
+                    </div>
+                    <div class="dice" id="die5">
+                        <img src="docs/design_system/images/dice5.png" class="face">
+                    </div>
+                </div>
+            </div>
+            <!-- for where rolled -->
+            <div class="row">
+                <div class="TitleButton">
+                    <h4>Dices Rolled</h4>
+                    <button class="reroll-button">Re-Roll</button>
+                </div>
+                <div class="DisplayOfRolling">
+                    <div id="endGameMessage"></div>
+                </div>
+            </div>
+        
+        </div>
+        <div class="scoreColumn" id="scoreTable">
+            <div class="header">
+                <div class="headerCell"></div>
+                <div class="headerCell">SCORING TABLE</div> <!-- for 1 player/1 turn-->
+            </div>
+            <div class="row">
+                <div class="cell">Ones</div>
+                <div class="cell" id="Ones" data-row="1" data-column="1"></div>
+            </div>
+            <div class="row">
+                <div class="cell">Twos</div>
+                <div class="cell" id="Twos" data-row="2" data-column="1"></div>
+            </div>
+           <div class="row">
+                <div class="cell">Threes</div>
+                <div class="cell" id="Threes" data-row="3" data-column="1"></div>
+            </div>
+            <div class="row">
+                <div class="cell">Fours</div>
+                <div class="cell" id="Fours" data-row="4" data-column="1"></div>
+            </div>
+            <div class="row">
+                <div class="cell">Fives</div>
+                <div class="cell" id="Fives" data-row="5" data-column="1"></div>
+            </div>
+            <div class="row">
+                <div class="cell">Sixes</div>
+                <div class="cell" id="Sixes" data-row="6" data-column="1"></div>
+            </div>
+
+            <div class="row">
+                <div class="cell" id="SumCaption">Sum of Scores</div>
+                <div class="cell" id="Sum1"></div>
+            </div>
+            <div class="row">
+                <div class="cell" id="BonusCaption">Bonus</div>
+                <div class="cell" id="bonus1"></div>
+            </div>
+
+            <!-- second section -->
+            <div class="row">
+                <div class="cell">One Pair</div>
+                <div class="cell" id="OnePair" data-row="7" data-column="1"></div>
+            </div>
+            <div class="row">
+                <div class="cell">Two Pair</div>
+                <div class="cell" id="TwoPair" data-row="8" data-column="1"></div>
+            </div>
+            <div class="row">
+                <div class="cell">Three of a kind</div>
+                <div class="cell" id="ThreeOfKind" data-row="9" data-column="1"></div>
+            </div>
+            <div class="row">
+                <div class="cell">Four of a kind</div>
+                <div class="cell" id="FourOfKind" data-row="10" data-column="1"></div>
+            </div>
+            <div class="row">
+                <div class="cell">Small Straight</div>
+                <div class="cell" id="smallStraight" data-row="11" data-column="1"></div>
+            </div>
+            <div class="row">
+                <div class="cell">Large Straight</div>
+                <div class="cell" id="LargeStraight" data-row="12" data-column="1"></div>
+            </div>
+            <div class="row">
+                <div class="cell">Full House</div>
+                <div class="cell" id="FullHouse" data-row="13" data-column="1"></div>
+            </div>
+            <div class="row">
+                <div class="cell">Chance</div>
+                <div class="cell" id="chance" data-row="14" data-column="1"></div>
+            </div>
+            <div class="row">
+                <div class="cell">Yatzy</div>
+                <div class="cell" id="yatzy" data-row="15" data-column="1"></div>
+            </div>
+
+            <div class="row">
+                <div class="cell" id="TotalCaption">Total Score</div>
+                <div class="cell" id="total" data-row="16" data-column="1"></div>
+            </div>
+
+        </div>
+      </div>
+    
+      <script src="main.js"></script>
+</body>
+</html>
