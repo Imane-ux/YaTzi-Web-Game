@@ -54,7 +54,7 @@ The final score is calculated and displayed.
 ***Technologies Used:***
 HTML, CSS, & JavaScript
 
-***Technical outline of project can be found in your portfolio projects section. Visit our Assignment 1 respo to review:***
+***Technical outline of project can be found in our portfolio projects section. Visit our Assignment 1 respo to review:***
 https://github.com/Imane-ux/Portfolio 
 
 
