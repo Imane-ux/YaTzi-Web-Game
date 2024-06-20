@@ -57,7 +57,7 @@ body {
     border: 4px solid rgb(17, 141, 54); /* Green border with 2px width */
     padding: 20px; /* Padding inside the border */
     height: 40%;
-    min-height: 100px;
+    min-height: 350px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -89,6 +89,7 @@ body {
     border: 1px solid white; /* Black border */
     padding: 8px; /* Adjust padding as needed */
     width:100px;
+    color: white;
 }
 .headerCell{
     align-items: center;
