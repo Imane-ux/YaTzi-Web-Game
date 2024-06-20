@@ -42,14 +42,14 @@ The final score is calculated and displayed.
 ### Screenshots
 
 
-Initial game interface with dice and score table.
+*Initial game interface with dice and score table.*
 
 <img width="400" height="400" alt="Screenshot 2024-06-19 at 8 20 33 PM" src="https://github.com/Imane-ux/YaTzi-Web-Game/assets/113464456/4faf2863-4afd-40cd-bda2-fc77bcf868ac">
 
 
-Rolling the dice and selecting which ones to keep.
+*Rolling the dice and selecting which ones to keep.*
 
-Example of scoring stored in table.
+*Example of scoring stored in table.*
 
 ***Technologies Used:***
 HTML, CSS, & JavaScript
