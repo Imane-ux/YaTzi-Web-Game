@@ -48,9 +48,23 @@ The final score is calculated and displayed.
 <img width="400" height="400" alt="Screenshot 2024-06-19 at 8 20 33 PM" src="https://github.com/Imane-ux/YaTzi-Web-Game/assets/113464456/4faf2863-4afd-40cd-bda2-fc77bcf868ac">
 
 
-*Rolling the dice and selecting which ones to keep.*
+*Re-Roll button disabled after 2 rolls until user enters score*
 
-*Example of scoring stored in table.*
+<img width="400" height="400" src="https://github.com/Imane-ux/YaTzi-Web-Game/assets/113464456/4d6bc54e-c435-4959-bee2-2534c397463c">
+
+
+
+*End game state after entering all 15 rows*
+
+<img width="400" height="400" src="https://github.com/Imane-ux/YaTzi-Web-Game/assets/113464456/74a80692-f193-432f-80f2-60ed092f8468">
+
+
+*Result and total score achieved*
+
+<img width="400" height="400" src="https://github.com/Imane-ux/YaTzi-Web-Game/assets/113464456/9fa015b2-fec7-468a-9652-0f92ffe70b53">
+
+
+
 
 ***Technologies Used:***
 HTML, CSS, & JavaScript
