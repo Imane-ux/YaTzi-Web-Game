@@ -19,7 +19,7 @@ rollButton.addEventListener('click', function() {
             rollDice();
         } else {
             rollButton.disabled = true;
-            rollButton.removeEventListener('click', rollDice); 
+            rollButton.removeEventListener('click', rollDice); //12.1
             console.log('No more rolls allowed, until score is entered.');
         }
     }
@@ -39,19 +39,20 @@ function rollDice() {
 
 function displayDice(dice) {
     const playArea= document.querySelector(".DisplayOfRolling");
-    const diceContainer = document.querySelector(".savedDiceDisplay");
+    const diceContainer = document.querySelector(".savedDiceDisplay"); //container
     //diceContainer.innerHTML = ""; // Clear previous dice
     let numDice= diceContainer.children.length; //num of childs kept
-    
+    //12.2 counter
     diceElements.forEach( function(diceElement, index){
-        if (diceElement.classList.contains("active") || rollCount ==1){
-            resetDicePositions(); // cuz only 2 rolls allowed
+        if (diceElement.classList.contains("active") || rollCount ==1){ //12.2
+            resetDicePositions(); // cuz only 2 rolls allowed //12.3
             const x = transformValues[index][0];// back to intial positions
             const y = transformValues[index][1];
 
             setTimeout(function(){
                 changeDiePosition(diceElement, x, y);
                 changeDiceFaces(dice);
+                writeTempValuesInScoreTable(playerDice); //added m
 
                 if (rollCount == 2) {
                     rollButton.disabled = true;
@@ -105,7 +106,7 @@ function resetDiceFaces() {
 //Dice Elements'Events listeners
 diceElements.forEach(function(diceElement,index){
         diceElement.addEventListener("click",function(){
-          if(rollCount==0) return;
+          if(rollCount==0) return; //12.4
           diceElement.classList.toggle("active");
           if(!diceElement.classList.contains("active")){
             diceElement.style.transform="none";      
@@ -124,29 +125,8 @@ function writeTempValuesInScoreTable(dice) {
         scoreTable= playerScore.slice();
         //onlyPossibleRow="blank";
         let yatzyScore= calculateYatzy(dice);
-        const yatziElement= document.getElementById("yatzy");
-
-        // For special cases like yahzi, and joker nooo(not sure if it has it)
-        console.log("wtinst once calculation applied, now the button for rerolling is no longer disabled")
-        //A counter should be set for once all score boxes our full, its the end game
-        //rollButton.disabled = false;
-
-        // Implement logic for Upper Section (Ones to Sixes)
-        for (let i = 0; i < 6; i++) {
-            if (scoreTable[i] === undefined) {
-                scoreTable[i] = calculateUpperSection(scoreTable);
-                break; // Exit loop after filling one category
-            }
-        }
-
-            // Check if Upper Section bonus is achieved
-        if (scoreTable.slice(0, 6).reduce((sum, score) => sum + score, 0) >= 63) {
-            if (scoreTable[6] === undefined) {
-                scoreTable[6] = 50; // Bonus for Upper Section
-            }
-        }
-
-        //should this be before or after 
+        const yatziElement= document.getElementById("yatzy"); //12.5 not n use
+       
         if (scoreTable[0] === undefined) {
             let onesScore = calculateOnes(dice);
             console.log("ones", onesScore);
@@ -173,51 +153,56 @@ function writeTempValuesInScoreTable(dice) {
             document.getElementById("Sixes").innerHTML = sixesScore;
           }
 
-        // Implement logic for Lower Section categories
+        // Implement logic for Lower Section categories //12; skipped 6? yes cuz sum? no no need 
+        if (scoreTable[6] === undefined) {
+          //console.log("got in?");
+          //console.log("table", scoreTable);
+            scoreTable[6] = calculateOnePair(dice);
+            document.getElementById("OnePair").innerHTML = scoreTable[6];
+        }
         if (scoreTable[7] === undefined) {
-            scoreTable[7] = calculateOnePair(dice);
-            document.getElementById("OnePair").innerHTML = scoreTable[7];
+            scoreTable[7] = calculateTwoPair(dice);
+            document.getElementById("TwoPair").innerHTML = scoreTable[7];
         }
         if (scoreTable[8] === undefined) {
-            scoreTable[8] = calculateTwoPair(dice);
-            document.getElementById("TwoPair").innerHTML = scoreTable[8];
+            scoreTable[8] = calculateThreeOfAKind(dice);
+            //console.log("3ofK", calculateThreeOfAKind(dice));
+            document.getElementById("ThreeOfKind").innerHTML = scoreTable[8];
         }
         if (scoreTable[9] === undefined) {
-            scoreTable[9] = calculateThreeOfAKind(dice);
-            document.getElementById("ThreeOfKind").innerHTML = scoreTable[9];
+            scoreTable[9] = calculateFourOfAKind(dice);
+            document.getElementById("FourOfKind").innerHTML = scoreTable[9];
         }
         if (scoreTable[10] === undefined) {
-            scoreTable[10] = calculateFourOfAKind(dice);
-            document.getElementById("FourOfKind").innerHTML = scoreTable[10];
+            scoreTable[10] = calculateSmallStraight(dice);
+            document.getElementById("smallStraight").innerHTML = scoreTable[10];
         }
         if (scoreTable[11] === undefined) {
-            scoreTable[11] = calculateSmallStraight(dice);
-            document.getElementById("smallStraight").innerHTML = scoreTable[11];
+            scoreTable[11] = calculateLargeStraight(dice);
+            document.getElementById("LargeStraight").innerHTML = scoreTable[11];
         }
         if (scoreTable[12] === undefined) {
-            scoreTable[12] = calculateLargeStraight(dice);
-            document.getElementById("LargeStraight").innerHTML = scoreTable[12];
+            scoreTable[12] = calculateFullHouse(dice);
+            document.getElementById("FullHouse").innerHTML = scoreTable[12];
+            
         }
         if (scoreTable[13] === undefined) {
-            scoreTable[13] = calculateFullHouse(dice);
-            document.getElementById("FullHouse").innerHTML = scoreTable[13];
+            scoreTable[13] = calculateChance(dice);
+            document.getElementById("chance").innerHTML = scoreTable[13];
             
         }
         if (scoreTable[14] === undefined) {
-            scoreTable[14] = calculateChance(dice);
-            document.getElementById("chance").innerHTML = scoreTable[14];
-            
+            scoreTable[14] = yatzyScore; // Assign Yatzy score directly here
+            document.getElementById("yatzy").innerHTML = scoreTable[14];
         }
-        if (scoreTable[15] === undefined) {
-            scoreTable[15] = yatzyScore; // Assign Yatzy score directly here
-            document.getElementById("yatzy").innerHTML = scoreTable[15];
-        }
+        console.log(scoreTable);
         // Update playerScore with the calculated scores
-        playerScore = scoreTable;
+        //playerScore = scoreTable; //change 12
 
         // Update UI or any other logic based on scoring
-        console.log("Scores updated:", playerScore);
+        //console.log("Scores updated:", playerScore);
         // can disable button gere as welll.
+        ////12.1
 
 }
 // updateScoreForCategory{} for the ones taht only have 1 possible row where the score can be entered
@@ -226,60 +211,49 @@ scoreTableCells.forEach(function(cell){
     cell.addEventListener("click",onCellClick);
   });
   function onCellClick(){
-    //to be implemented
-    // P>S instead of changing turns, since its only 1 player, just set the re-roll button as enabled, after score
-    //like rollButton.disabled = false;
     const row = this.getAttribute("data-row");
     const column = this.getAttribute("data-column");
-    /*if (rollCount === 0 || onlyPossibleRow !== "blank" && row !== onlyPossibleRow) {
-        return;
-    }*/
-    /*if (rollCount > 0 && onlyPossibleRow !== "blank" && row === onlyPossibleRow) {
-        // Update score based on the Yatzi rules for the clicked category
-        // Implement your specific scoring logic here
-        // Example:
-        // playerScore[row - 1] = calculateScoreForCategory(dice, row);
-        // updateScoreTable(); // Update the UI after scoring
-        // Reset dice and enable roll button
-        resetDiceFaces();
-        rollButton.disabled = false;
+    if( rollCount==0 || row===null ) return; //12.1 
 
-    }*/
-    if( rollCount==0 || row===null ) return;
-    /*if (row >= 0 && row < 6 && playerScore[row] === undefined) {
-        playerScore[row] = calculateUpperSection();
-    }*/
-    //updateScoreTableVisibility(this);
     playerScore[row-1]=parseInt(this.innerHTML);
+
+    // is this just to diaplay possible options i think so . //12.1
     let upperSectionScore1=calculateUpperSection(playerScore);
     let bonusScore1=upperSectionScore1>63 ? 35 : 0;// check this 
     let lowerSectionScore1=calculateLowerSectionScore(playerScore);
-    let totalScore1=upperSectionScore1+lowerSectionScore1+bonusScore1;
+    //console.log("this is LS", lowerSectionScore1);
+    let totalScore1= upperSectionScore1+lowerSectionScore1+bonusScore1;
+    //console.log("this is bonuS", bonusScore1);
+    console.log("this is total", totalScore1);
     Sum1.innerHTML=upperSectionScore1;
     bonus1.innerHTML=bonusScore1;
-    total.innerHTML=totalScore1;
+    total1.innerHTML= totalScore1;
+    console.log("1st", document.getElementById("total1").innerHTML);
+    //document.getElementById("total").innerHTML= totalScore1;
     this.removeEventListener("click",onCellClick);
-    console.log(` shoudl add code to display i guess, Score selected for row ${row}, column ${column}:`, playerScore);
+    //console.log(` shoudl add code to display i guess, Score selected for row ${row}, column ${column}:`, playerScore);
     this.style.color="green";
+    this.style.cursor= "default";
     Sum1.style.color="green";
     bonus1.style.color="green";
-    total.style.color="green";
+    total1.style.color="green";
+
+
     numFilledRowScore++;
     console.log(numFilledRowScore);
 
 
-
-    // Update UI display (if needed)----------------------
-
     // Enable roll button for next turn
     rollButton.disabled = false;
-    console.log("btn disablesnow.");
+    //console.log("btn disablesnow.");
     rollButton.style.opacity = 1; 
     rollCount=0;
     //update Table all gone.
     updateScoreTable();
+    resetDiceFaces();
     if(numFilledRowScore==15)  {
         calculateEndGameScore();
+        window.prompt("the end, your score is : XO")
         console.log("print end");
         return;
       }
@@ -287,7 +261,7 @@ scoreTableCells.forEach(function(cell){
 
 function calculateEndGameScore() {
     //to be implemented. you can use: 
-    let playerTotal=parseInt(document.getElementById("total").innerHTML);
+    let playerTotal=parseInt(document.getElementById("total1").innerHTML);//12.1 does totalproper
     const endGameMessage= "End of Game. Your total score is" + playerTotal;
     resetDicePositions();
     document.getElementById("endGameMessage").innerHTML=endGameMessage;
@@ -368,10 +342,8 @@ function calculateYatzy(dice) {
     return score;
   }
 
-  /*function calculateUpperSectionScore(dice, number) {
-    return dice.reduce((sum, die) => die === number ? sum + die : sum, 0);
-}*/
 function calculateOnePair(dice) {
+    console.log("in 1 pair",dice);
     let pairs = [];
     let score = 0;
     for (let i = 0; i < dice.length; i++) {
@@ -497,7 +469,7 @@ function calculateOnePair(dice) {
     }
     return score;
   }
-  function calculateUpperSection(playerScore){
+  function calculateUpperSection(playerScore){ ////12.1
     let score=0;
     let ones=playerScore[0]==undefined ? 0 : playerScore[0];
     let twos=playerScore[1]==undefined ? 0 : playerScore[1];
@@ -508,28 +480,28 @@ function calculateOnePair(dice) {
     score=ones+twos+threes+fours+fives+sixes;
     return score;
   }
-  function calculateLowerSectionScore(playerScore){
+  function calculateLowerSectionScore(playerScore){ ////12.1
     let lowerSectionScore=0;
-    let fourOfAKind=playerScore[7]===undefined ? 0 : playerScore[7];
-    let fullHouse=playerScore[8]===undefined ? 0 : playerScore[8];
-    let smallStraight=playerScore[9]===undefined ? 0 : playerScore[9];
-    let largeStraight=playerScore[10]===undefined ? 0 : playerScore[10];
-    let chance=playerScore[11]===undefined ? 0 : playerScore[11];
-    let yatzy=playerScore[12]===undefined ? 0 : playerScore[12];
-    let yatzy1=playerScore[13]===undefined ? 0 : playerScore[13];
-    let yatzy2=playerScore[14]===undefined ? 0 : playerScore[14];
-    let yatzy3=playerScore[15]===undefined ? 0 : playerScore[15];
+    let onePair= playerScore[6]===undefined ? 0 : playerScore[6];
+    let twoPair=playerScore[7]===undefined ? 0 : playerScore[7];
+    let threeofKind= playerScore[8]===undefined ? 0 : playerScore[8];
+    let fourOfAKind=playerScore[9]===undefined ? 0 : playerScore[9];
+    let smallStraight=playerScore[10]===undefined ? 0 : playerScore[10];
+    let largeStraight=playerScore[11]===undefined ? 0 : playerScore[11];
+    let fullHouse=playerScore[12]===undefined ? 0 : playerScore[12];
+    let chance=playerScore[13]===undefined ? 0 : playerScore[13];
+    let yatzy=playerScore[14]===undefined ? 0 : playerScore[14];
     
 
     if(yatzy>0) {
       yatzy=parseInt(document.getElementById("yatzy").innerHTML);
     }
-    lowerSectionScore=fourOfAKind+fullHouse+smallStraight+largeStraight
-    + chance+yatzy+yatzy1+yatzy2+yatzy3;
+    lowerSectionScore= onePair+ twoPair+ threeofKind+ fourOfAKind+fullHouse+smallStraight+largeStraight
+    + chance+yatzy;
     return lowerSectionScore;
   }
   
-  function updateScoreTable(){
+  function updateScoreTable(){//12.1
     let scoreTable=[];
     scoreTable=playerScore.slice();
     let scoreCells=document.querySelectorAll('[data-column="1"]');
@@ -539,11 +511,4 @@ function calculateOnePair(dice) {
       }
     }
   }
-
-  function updateScoreTableVisibility(clickedCell) {
-    scoreTableCells.forEach(function (cell) {
-      if (cell !== clickedCell) {
-        cell.innerHTML = undefined; // Set other cells to undefined
-        cell.style.color = "black"; // Reset the color
-      }
-    });}
+  

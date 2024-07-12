@@ -111,3 +111,8 @@ body {
 .face:hover {
     transform: scale(1.1);
   }
+
+  .cell:last-child {
+    cursor:pointer;
+  }
+
