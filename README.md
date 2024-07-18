@@ -16,7 +16,11 @@ cd YaTzi-Web-Game
 
 *Run the Game:*
 ```
-Open index.html in your web browser.
+If you're not using XAMPP:
+1. You can open new terminal at project folder and run command line: php -S localhost:8000
+    --> Make sure to have php installed on your mac.
+
+2. Open this link http://localhost:8000 on your web browser.
 ```
 ### Game Instructions
 
@@ -38,7 +42,7 @@ Click on the corresponding score cell in the score table to enter your score for
 *-Game End:*
 
 The game ends when all score categories are filled for both upper and lower sections.
-The final score is calculated and displayed.
+The final score is calculated and displayed, along with the leaderboard of your top 10 scores, at the end of each round played.
 
 ### Screenshots
 
@@ -67,7 +71,7 @@ The final score is calculated and displayed.
 
 
 ***Technologies Used:***
-HTML, CSS, & JavaScript
+HTML, CSS, JavaScript & php
 
 ***Technical outline of project can be found in our [Portfolio](https://github.com/Imane-ux/Portfolio) projects section from Assignment 1.***
 
