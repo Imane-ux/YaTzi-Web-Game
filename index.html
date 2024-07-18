@@ -45,7 +45,7 @@
                     <button class="reroll-button">Re-Roll</button>
                 </div>
                 <div class="DisplayOfRolling">
-                    <div id="endGameMessage"></div>
+                    <div id="endGameMessage1"></div>
                 </div>
             </div>
         
@@ -127,13 +127,17 @@
                 <div class="cell" id="yatzy" data-row="15" data-column="1"></div>
             </div>
 
-            <div class="row">
+            <!--<div class="row">
                 <div class="cell" id="TotalCaption">Total Score</div>
                 <div class="cell" id="total1" data-row="16" data-column="1"></div>
-            </div>
+            </div>-->
 
         </div>
       </div>
+      <div id="endGameModal" class="modal">
+            <span id="endGameMessage"></span>
+            <span id="closeModal" class="modal-close">&times;</span>
+        </div>
     
       <script src="main.js"></script>
 </body>
