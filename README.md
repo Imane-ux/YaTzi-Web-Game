@@ -52,21 +52,23 @@ The final score is calculated and displayed, along with the leaderboard of your 
 <img width="400" height="400" alt="Screenshot 2024-06-19 at 8 20 33 PM" src="https://github.com/Imane-ux/YaTzi-Web-Game/assets/113464456/4faf2863-4afd-40cd-bda2-fc77bcf868ac">
 
 
+*Scoring table after first roll*
+
+<img src="https://github.com/user-attachments/assets/017ff58a-eb66-42e6-805f-90d0e340dd0c" alt="image" width="400" height="400">
+
 *Re-Roll button disabled after 2 rolls until user enters score*
 
-<img width="400" height="400" src="https://github.com/Imane-ux/YaTzi-Web-Game/assets/113464456/4d6bc54e-c435-4959-bee2-2534c397463c">
-
+<img src="https://github.com/user-attachments/assets/ea3ee272-a14f-4d03-a9e9-88a5db10a167" alt="image" width="400" height="400">
 
 
 *End game state after entering all 15 rows*
 
-<img width="400" height="400" src="https://github.com/Imane-ux/YaTzi-Web-Game/assets/113464456/74a80692-f193-432f-80f2-60ed092f8468">
+<img src="https://github.com/user-attachments/assets/7d662c4b-1a70-4c68-b446-eb30098f7805" alt="image" width="400" height="400">
 
 
-*Result and total score achieved*
+*Leaderboard popup with player's total score and top 10 scores achieved*
 
-<img width="400" height="400" src="https://github.com/Imane-ux/YaTzi-Web-Game/assets/113464456/9fa015b2-fec7-468a-9652-0f92ffe70b53">
-
+<img src="https://github.com/user-attachments/assets/d9cec44c-31eb-4ee0-a54e-06053349ae72" alt="image" width="400" height="400">
 
 
 
