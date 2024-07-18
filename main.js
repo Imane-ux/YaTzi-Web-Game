@@ -1,8 +1,8 @@
 // Variables to track dice state
-let playerDice=[]; // i.e the dice player chose to keep
+/*let playerDice=[]; // i.e the dice player chose to keep
 let playerScore=[];
 let rollCount=0;
-let numFilledRowScore=0;
+let numFilledRowScore=0;*/
 let transformValues= [
     [0, 35], [-5, 45], [0, 40], [5, 45], [0, 35]
   ];
@@ -12,47 +12,57 @@ const rollButton= document.querySelector(".reroll-button");
 const diceElements= document.querySelectorAll(".dice");
 const scoreTableCells=document.querySelectorAll(".cell");
 
-//rollButton.addEventListener("click", rollDice);
-rollButton.addEventListener('click', function() {
-    if (!rollButton.disabled) {
-        if (rollCount < 2) { // Allow up to 2 rolls
-            rollDice();
-        } else {
-            rollButton.disabled = true;
-            rollButton.removeEventListener('click', rollDice); //12.1
-            console.log('No more rolls allowed, until score is entered.');
-        }
-    }
-});
 function rollDice() {
-    // Roll five dices over 6.
-    rollCount++;
-    let randomDice= [];
-    for (let i = 0; i < 5; i++) {
-        randomDice.push(Math.floor(Math.random() * 6) + 1);
+  fetch('http://localhost:8000/yatzy.php', {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: 'action=rollDice'
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
     }
+    return response.json();
+})
+  .then(data => {
+      // Update UI with rolled dice values
+      displayDice(data.randomDice, data.rollCount, data.playerDice); // Update displayDice function to handle this
+      console.log('Dice rolled:', data.randomDice);
+      console.log('Roll count:', data.rollCount);
 
-    // Display the rolled dice
-    displayDice(randomDice);
-
+      // Check roll count from server response to enable/disable roll button
+      if (data.rollCount >= 2) {
+          rollButton.disabled = true;
+          rollButton.removeEventListener('click', rollDice); // Remove event listener
+          console.log('No more rolls allowed until score is entered.');
+      }
+  })
+  .catch(error => console.error('Error rolling dice:', error));
 }
 
-function displayDice(dice) {
+rollButton.addEventListener('click', function() {
+  if (!rollButton.disabled) {
+      rollDice(); // Call rollDice function to initiate a dice roll
+  }
+});
+
+function displayDice(dice, rollCount, playerDice) {
     const playArea= document.querySelector(".DisplayOfRolling");
-    const diceContainer = document.querySelector(".savedDiceDisplay"); //container
-    //diceContainer.innerHTML = ""; // Clear previous dice
-    let numDice= diceContainer.children.length; //num of childs kept
-    //12.2 counter
+    const diceContainer = document.querySelector(".savedDiceDisplay"); 
+    //let numDice= diceContainer.children.length; 
     diceElements.forEach( function(diceElement, index){
-        if (diceElement.classList.contains("active") || rollCount ==1){ //12.2
-            resetDicePositions(); // cuz only 2 rolls allowed //12.3
-            const x = transformValues[index][0];// back to intial positions
+        if (diceElement.classList.contains("active") || rollCount ==1){ 
+            resetDicePositions(); // cuz only 2 rolls allowed 
+            const x = transformValues[index][0];// back to intial positions 
             const y = transformValues[index][1];
 
             setTimeout(function(){
                 changeDiePosition(diceElement, x, y);
-                changeDiceFaces(dice);
-                writeTempValuesInScoreTable(playerDice); //added m
+                changeDiceFaces(dice, rollCount, playerDice);
+                
+                writeTempValuesInScoreTable(playerDice);
 
                 if (rollCount == 2) {
                     rollButton.disabled = true;
@@ -84,17 +94,40 @@ function changeDiePosition(diceElement,x,y){
         "vh) rotate(" + angle + "deg)";
       }
 
-function changeDiceFaces(randomDice) {
+function changeDiceFaces(randomDice, rollCount, playerDice) {
         for (let i=0; i < diceElements.length;i++) {
-          if(rollCount ===1) diceElements[i].classList.add("active");
+          if(rollCount ===1) diceElements[i].classList.add("active");// no more rolls alllowed, all should be active, could return em back to position here
           if(diceElements[i].classList.contains("active")) {
-            playerDice[i]=randomDice[i];
-      
+            playerDice[i]=randomDice[i];  
             let face = diceElements[i].getElementsByClassName("face")[0];
             face.src="docs/design_system/images/dice"+randomDice[i]+".png";
           }
         }
+        updatePlayerDice(playerDice);
     }
+
+    function updatePlayerDice(playerDice) {
+      fetch('http://localhost:8000/yatzy.php', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: 'action=updatePlayerDice&randomDice=' + JSON.stringify(playerDice)
+      })
+      .then(response => {
+          if (!response.ok) {
+              throw new Error('Network response was not ok');
+          }
+          return response.json();
+      })
+      .then(data => {
+          
+          console.log('Player dice updated on server:', data.playerDice);
+      })
+      .catch(error => console.error('Error updating player dice:', error));
+  }
+
+
 function resetDiceFaces() {
         for (let i=0;i<diceElements.length;i++){
           let face = diceElements[i].getElementsByClassName("face")[0];
@@ -103,10 +136,32 @@ function resetDiceFaces() {
           face.src="docs/design_system/images/dice"+diceNumber+".png";
         }
       }
+
+function fetchRollCount() {
+        fetch('http://localhost:8000/yatzy.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'action=getRollCount'
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.text(); 
+        })
+        .then(data => {
+            const rollCount = parseInt(data); // Parse the response as an integer
+            console.log('Current roll count:', rollCount);
+        })
+        .catch(error => console.error('Error fetching roll count:', error));
+      }
+
 //Dice Elements'Events listeners
 diceElements.forEach(function(diceElement,index){
         diceElement.addEventListener("click",function(){
-          if(rollCount==0) return; //12.4
+          if(fetchRollCount()==0) return; 
           diceElement.classList.toggle("active");
           if(!diceElement.classList.contains("active")){
             diceElement.style.transform="none";      
@@ -120,7 +175,7 @@ diceElements.forEach(function(diceElement,index){
           }
         })
     })
-function writeTempValuesInScoreTable(dice) {
+/*function writeTempValuesInScoreTable(dice) {
         let scoreTable= [];
         scoreTable= playerScore.slice();
         //onlyPossibleRow="blank";
@@ -204,311 +259,182 @@ function writeTempValuesInScoreTable(dice) {
         // can disable button gere as welll.
         ////12.1
 
+}*/
+function writeTempValuesInScoreTable() {
+  fetch('http://localhost:8000/yatzy.php', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded', // Adjusted to form-urlencoded
+    },
+    body: 'action=calculateScores', // No need to send dice data anymore
+  })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.text(); // Expecting HTML/text response
+    })
+    .then(htmlResponse => {
+
+      //console.log('HTML Response:', htmlResponse);
+      const response = JSON.parse(htmlResponse);
+    
+      Object.keys(response).forEach(category => {
+        const element = document.getElementById(category);
+        if (element) {
+          element.innerHTML = response[category];
+        }
+      });
+
+      //console.log('Score table updated on client');
+    })
+    .catch(error => console.error('Error updating score table:', error));
 }
-// updateScoreForCategory{} for the ones taht only have 1 possible row where the score can be entered
+
 
 scoreTableCells.forEach(function(cell){
     cell.addEventListener("click",onCellClick);
   });
   function onCellClick(){
-    const row = this.getAttribute("data-row");
-    const column = this.getAttribute("data-column");
-    if( rollCount==0 || row===null ) return; //12.1 
+    const id = this.getAttribute("id");
+    const yatzyScore = parseInt(document.getElementById("yatzy").innerHTML);
 
-    playerScore[row-1]=parseInt(this.innerHTML);
+    if( fetchRollCount()==0 || id===null ) return; 
 
-    // is this just to diaplay possible options i think so . //12.1
-    let upperSectionScore1=calculateUpperSection(playerScore);
-    let bonusScore1=upperSectionScore1>63 ? 35 : 0;// check this 
-    let lowerSectionScore1=calculateLowerSectionScore(playerScore);
-    //console.log("this is LS", lowerSectionScore1);
-    let totalScore1= upperSectionScore1+lowerSectionScore1+bonusScore1;
-    //console.log("this is bonuS", bonusScore1);
-    console.log("this is total", totalScore1);
-    Sum1.innerHTML=upperSectionScore1;
-    bonus1.innerHTML=bonusScore1;
-    total1.innerHTML= totalScore1;
-    console.log("1st", document.getElementById("total1").innerHTML);
-    //document.getElementById("total").innerHTML= totalScore1;
-    this.removeEventListener("click",onCellClick);
-    //console.log(` shoudl add code to display i guess, Score selected for row ${row}, column ${column}:`, playerScore);
-    this.style.color="green";
-    this.style.cursor= "default";
-    Sum1.style.color="green";
-    bonus1.style.color="green";
-    total1.style.color="green";
-
-
-    numFilledRowScore++;
-    console.log(numFilledRowScore);
-
-
-    // Enable roll button for next turn
-    rollButton.disabled = false;
-    //console.log("btn disablesnow.");
-    rollButton.style.opacity = 1; 
-    rollCount=0;
-    //update Table all gone.
-    updateScoreTable();
-    resetDiceFaces();
-    if(numFilledRowScore==15)  {
-        calculateEndGameScore();
-        window.prompt("the end, your score is : XO")
-        console.log("print end");
-        return;
+    //playerScore[row-1]=parseInt(this.innerHTML);
+    fetch('http://localhost:8000/yatzy.php', {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      
+      body: new URLSearchParams({
+        action: 'enterScore', 
+        id: id,
+        score: this.innerHTML, // Send updated player scores to PHP
+        yatzy: yatzyScore
+      }).toString()
+    
+  })
+    //.then(response => response.json())
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
       }
+      return response.json(); 
+    })
+    .then(data => {
+      console.log('JSON Response:', data);
+        Sum1.innerHTML = data.upperSectionScore;
+        bonus1.innerHTML = data.bonusScore;
+        //total1.innerHTML = data.totalScore;
+        console.log("this is total", data.totalScore);
+
+        this.removeEventListener("click",onCellClick);
+        this.style.color="green";
+        this.style.cursor= "default";
+        Sum1.style.color="green";
+        bonus1.style.color="green";
+        //total1.style.color="green";
+
+        // Enable roll button for next turn
+        rollButton.disabled = false;
+        rollButton.style.opacity = 1; 
+
+        updateScoreTable(data.gameState.playerScore);
+        resetDiceFaces();
+        if(data.gameState.numFilledRowScore==15)  {
+          calculateEndGameScore();
+          //console.log("print end");
+          return;
+        }
+
+
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
   }
 
-function calculateEndGameScore() {
-    //to be implemented. you can use: 
-    let playerTotal=parseInt(document.getElementById("total1").innerHTML);//12.1 does totalproper
-    const endGameMessage= "End of Game. Your total score is" + playerTotal;
+function calculateEndGameScore() { 
+    /*let playerTotal=parseInt(document.getElementById("total1").innerHTML);//12.1 does totalproper
+    const endGameMessage= "End of Game. Your total score is" + playerTotal;*/
+    endGameMessage= "End of Game Round. You can play another round after closing this window! \n Your total score for this round was: ";
     resetDicePositions();
-    document.getElementById("endGameMessage").innerHTML=endGameMessage;
-    rollButton.disabled=true;
-    rollButton.style.opacity=0.5;
+    
+    // Display modal with end game message
+    const modal = document.getElementById("endGameModal");
+    const messageElement = document.getElementById("endGameMessage");
+    const closeModal = document.getElementById("closeModal");
+
+    // Fetch leaderboard data
+    fetch('http://localhost:8000/yatzy.php?action=getLeaderboard')// get request 
+        .then(response => response.json())
+        .then(data => {
+            endGameMessage+= data.total;
+            // Construct leaderboard message
+            let leaderboardMessage = "<h3>Leaderboard -- Top Scores:</h3><ul>";
+            data.top_scores.forEach((score, index) => {
+                leaderboardMessage += `<li>#${index + 1}: ${score}</li>`;
+            });
+            leaderboardMessage += "</ul>";
+
+            // Set end game message and leaderboard in modal
+            messageElement.innerHTML = endGameMessage + leaderboardMessage;
+            modal.style.display = "block";
+        })
+        .catch(error => {
+            console.error('Error fetching leaderboard:', error);
+            // Fallback message if fetch fails
+            messageElement.textContent = endGameMessage + " (Leaderboard data could not be retrieved)";
+            modal.style.display = "block";
+        });
+  
+    // Close modal when close button is clicked
+    closeModal.addEventListener("click", function() {
+      modal.style.display = "none";
+    });
+    updateScoringTable();
+
 }
 
-//bunch of func to claculate scores for each rule
-function calculateOnes(dice) {
-    let score=0;
-    for (let i=0;i<dice.length;i++){
-      if(dice[i]===1) {
-        score+=1;
+function updateScoreTable(playerScore) {
+  //console.log(playerScore);
+  // Convert playerScore object to an array of objects for easier iteration
+  let scoreTable = Object.keys(playerScore).map(key => {
+      return { category: key, score: playerScore[key] };
+  });
+  console.log("score table after player score copy?",scoreTable);
+  // Clear all score cells initially
+  let scoreCells = document.querySelectorAll('[data-column="1"]');
+  scoreCells.forEach(cell => {
+      let category = cell.getAttribute('id');
+      let scoreObj = scoreTable.find(item => item.category === category);
+      //console.log("score obj found?", scoreObj);
+      if (scoreObj) {
+          cell.innerHTML = scoreObj.score; // Update cell with score
+      } else {
+          cell.innerHTML = ''; // Clear cell if category score is not defined
       }
-    }
-    return score;
-  }
-  function calculateTwos(dice) {
-    let score=0;
-    for (let i=0;i<dice.length;i++){
-      if(dice[i]===2) {
-        score+=2;
-      }
-    }
-    return score;
-  }
-  function calculateThrees(dice) {
-    let score=0;
-    for (let i=0;i<dice.length;i++){
-      if(dice[i]===3) {
-        score+=3;
-      }
-    }
-    return score;
-  }
-  function calculateFours(dice) {
-    let score=0;
-    for (let i=0;i<dice.length;i++){
-      if(dice[i]===4) {
-        score+=4;
-      }
-    }
-    return score;
-  }
-  function calculateFives(dice) {
-    let score=0;
-    for (let i=0;i<dice.length;i++){
-      if(dice[i]===5) {
-        score+=5;
-      }
-    }
-    return score;
-  }
-  function calculateSixes(dice) {
-    let score=0;
-    for (let i=0;i<dice.length;i++){
-      if(dice[i]===6) {
-        score+=6;
-      }
-    }
-    return score;
-  }
-  function calculateChance(dice) {
-    let score=0;
-    for (let i=0;i<dice.length;i++){ 
-        score+=dice[i];
-    }
-    return score;
-  }
-function calculateYatzy(dice) {
-    let firstDie=dice[0];
-    let score=50;
-    for (let i=0;i<dice.length;i++){
-      if(dice[i]!==firstDie) {
-        score=0;
-      }
-    }
-    return score;
-  }
+  });
+}
 
-function calculateOnePair(dice) {
-    console.log("in 1 pair",dice);
-    let pairs = [];
-    let score = 0;
-    for (let i = 0; i < dice.length; i++) {
-        let count = 1;
-        for (let j = 0; j < dice.length; j++) {
-            if (j !== i && dice[i] === dice[j]) {
-                count++;
-            }
-        }
-        if (count >= 2 && !pairs.includes(dice[i])) {
-            pairs.push(dice[i]);
-            score = Math.max(score, dice[i] * 2); // Take the highest pair
-        }
-    }
-    return score;
-  }
+function updateScoringTable() {
   
-  function calculateTwoPair(dice) {
-    let pairs = [];
-    let score = 0;
-    for (let i = 0; i < dice.length; i++) {
-        let count = 1;
-        for (let j = 0; j < dice.length; j++) {
-            if (j !== i && dice[i] === dice[j]) {
-                count++;
-            }
-        }
-        if (count >= 2 && !pairs.includes(dice[i])) {
-            pairs.push(dice[i]);
-        }
-    }
-    if (pairs.length >= 2) {
-        score = pairs.reduce((acc, val) => acc + val * 2, 0); // Sum of both pairs
-    }
-    return score;
-  }
-  
-  
-  function calculateThreeOfAKind(dice) {
-    let score=0;
-    for(let i=0;i<dice.length;i++){
-      let count=1;
-      for(let j=0;j<dice.length;j++) {
-        if(j!==i && dice[i]===dice[j]){
-          count++;
-        }
-      }
-      if(count>=3) {
-        score=dice.reduce((acc,val)=>acc+val);
-        break;
-      }
-    }
-    return score;
-  }
-  function calculateFourOfAKind(dice) {
-    let score=0;
-    for(let i=0;i<dice.length;i++){
-      let count=1;
-      for(let j=0;j<dice.length;j++) {
-        if(j!==i && dice[i]===dice[j]){
-          count++;
-        }
-      }
-      if(count>=4) {
-        score=dice.reduce((acc,val)=>acc+val);
-        break;
-      }
-    }
-    return score;
-  }
-  
-  
-  function calculateFullHouse(dice) {
-    let score=0;
-    let diceCopy=dice.slice();
-    diceCopy.sort();
-    if(
-      (diceCopy[0]==diceCopy[1] &&
-        diceCopy[1]==diceCopy[2] &&
-        diceCopy[3]==diceCopy[4]   
-        ) ||
-          (diceCopy[0]==diceCopy[1] &&
-            diceCopy[2]==diceCopy[3] &&
-            diceCopy[3]==diceCopy[4]   
-            )     
-    ) {
-      score=25;
-      return score;
-    }
-    return score;
-  }
-  
-  function calculateSmallStraight(dice) {
-    let score=0;
-    let diceCopy=[...new Set(dice)];
-    diceCopy.sort();
-    if(
-      (diceCopy[1]==diceCopy[0]+1 &&
-        diceCopy[2]==diceCopy[1]+1 &&
-        diceCopy[3]==diceCopy[2] +1  
-        ) ||
-          (diceCopy[2]==diceCopy[1]+1 &&
-            diceCopy[3]==diceCopy[2]+1 &&
-            diceCopy[4]==diceCopy[3] +1  
-            )     
-    ) {
-      score=30;
-    }
-    return score;
-  }
-  function calculateLargeStraight(dice) {
-    let score=0;
-    let diceCopy=[...new Set(dice)];
-    diceCopy.sort();
-    if(
-      (diceCopy[1]==diceCopy[0]+1 &&
-        diceCopy[2]==diceCopy[1]+1 &&
-        diceCopy[3]==diceCopy[2] +1 &&
-        diceCopy[4]==diceCopy[3] +1
-        )  
-    ) {
-      score=40;
-    }
-    return score;
-  }
-  function calculateUpperSection(playerScore){ ////12.1
-    let score=0;
-    let ones=playerScore[0]==undefined ? 0 : playerScore[0];
-    let twos=playerScore[1]==undefined ? 0 : playerScore[1];
-    let threes=playerScore[2]==undefined ? 0 : playerScore[2];
-    let fours=playerScore[3]==undefined ? 0 : playerScore[3];
-    let fives=playerScore[4]==undefined ? 0 : playerScore[4];
-    let sixes=playerScore[5]==undefined ? 0 : playerScore[5];
-    score=ones+twos+threes+fours+fives+sixes;
-    return score;
-  }
-  function calculateLowerSectionScore(playerScore){ ////12.1
-    let lowerSectionScore=0;
-    let onePair= playerScore[6]===undefined ? 0 : playerScore[6];
-    let twoPair=playerScore[7]===undefined ? 0 : playerScore[7];
-    let threeofKind= playerScore[8]===undefined ? 0 : playerScore[8];
-    let fourOfAKind=playerScore[9]===undefined ? 0 : playerScore[9];
-    let smallStraight=playerScore[10]===undefined ? 0 : playerScore[10];
-    let largeStraight=playerScore[11]===undefined ? 0 : playerScore[11];
-    let fullHouse=playerScore[12]===undefined ? 0 : playerScore[12];
-    let chance=playerScore[13]===undefined ? 0 : playerScore[13];
-    let yatzy=playerScore[14]===undefined ? 0 : playerScore[14];
-    
-
-    if(yatzy>0) {
-      yatzy=parseInt(document.getElementById("yatzy").innerHTML);
-    }
-    lowerSectionScore= onePair+ twoPair+ threeofKind+ fourOfAKind+fullHouse+smallStraight+largeStraight
-    + chance+yatzy;
-    return lowerSectionScore;
-  }
-  
-  function updateScoreTable(){//12.1
-    let scoreTable=[];
-    scoreTable=playerScore.slice();
-    let scoreCells=document.querySelectorAll('[data-column="1"]');
-    for (let i=0;i<scoreCells.length;i++) {
-      if(scoreTable[i]===undefined) {
-        scoreCells[i].innerHTML="";
-      }
-    }
-  }
-  
+  // Clear all score cells initially
+  let scoreCells = document.querySelectorAll('[data-column="1"]');
+  scoreCells.forEach(cell => {
+      cell.innerHTML = ''; 
+      cell.style.color="white";
+      cell.style.cursor = 'pointer';
+      // Restore event listener for the new round.
+      cell.addEventListener('click', onCellClick); 
+      
+  });
+  Sum1.style.color="white";
+  bonus1.style.color="white";
+  total1.style.color="white";
+  Sum1.innerHTML = '';
+  bonus1.innerHTML = '';
+  total1.innerHTML = '';
+}
